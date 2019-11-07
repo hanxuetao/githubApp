@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import {StyleSheet, View, Text} from 'react-native'
-
+import NavigationUtil from '../navigators/NavigationUtil';
 export default class WelcomePage extends React.Component{
     componentDidMount() {
         this.timer = setTimeout(() => {
-
-        }, 200);
+            NavigationUtil.resetToHomePage(this.props)
+        }, 2000);
     }
 
     componentWillMount() {
@@ -14,17 +14,22 @@ export default class WelcomePage extends React.Component{
 
     render() {
             return (
-                <View style={style.container}>
-                    <Text>Welcome Page</Text>
+                <View style={styles.container}>
+                    <Text style={styles.welcome}>Welcome Page</Text>
                 </View>
             );
         };
 };
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
     container:{
         flex: 1,
         justifyContent:'center',
         alignItems:'center',
+    },
+    welcome:{
+        fontSize:20,
+        textAlign:'center',
+        margin: 10,
     },
 })

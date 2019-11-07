@@ -1,23 +1,27 @@
-import React from 'react';
+import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
-import Page1 from '../pages/Page1';
-import Page2 from '../pages/Page2';
-import Page3 from '../pages/Page3';
+import WelcomePage from '../pages/WelcomePage';
 import HomePage from '../pages/HomePage';
 
-export const AppStackNavigator = createStackNavigator(
+
+const InitNavigator = createStackNavigator(
+    {
+        WelcomePage:{
+            screen:WelcomePage,
+            navigationOption:{
+                header: null,
+            },
+        },
+    },
+);
+
+const MainNavigator = createStackNavigator(
     {
         HomePage:{
             screen:HomePage,
-        },
-        Page1:{
-            screen:Page1,
-        },
-        Page2:{
-            screen:Page2,
-        },
-        Page3:{
-            screen:Page3,
+            navigationOption:{
+                header: null,
+            },
         },
     },
     {
@@ -26,5 +30,14 @@ export const AppStackNavigator = createStackNavigator(
         }
     }
 );
+
+export default createAppContainer(createSwitchNavigator({
+    Init:InitNavigator,
+    Main:MainNavigator,
+},{
+    navigationOption:{
+        header: null,
+    }
+}));
 
 
