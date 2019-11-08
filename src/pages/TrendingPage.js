@@ -1,11 +1,18 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Text} from 'react-native'
+import {StyleSheet, View, Text, Button} from 'react-native'
 
 export default class TrendingPage extends React.Component{
     render() {
+        const {navigation} = this.props;
         return (
             <View style={styles.container}>
                 <Text>Trending Page</Text>
+                <Button title={'change title'} onPress={() => navigation.setParams({
+                    theme:{
+                        tintColor:'blue',
+                        updateTime: new Date().getTime(),
+                    },
+                })} />
             </View>
         );
     };
