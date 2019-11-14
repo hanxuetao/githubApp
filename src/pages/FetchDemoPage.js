@@ -23,6 +23,27 @@ export default class FetchDemoPage extends React.Component{
             })
     }
 
+    LoadData2() {
+        let url = `https://api.github.com/search/repositories?q=${this.searchKey}`;
+        fetch(url)
+            .then(response => {
+                if(response.ok){
+                    return response.text();
+                }
+                throw new Error('Response Error');
+            })
+            .then(responseText => {
+                this.setState({
+                    showText: responseText,
+                })
+            })
+            .catch(e => {
+                this.setState({
+                    showText: e.toString(),
+                })
+            })
+    }
+
     render() {
         const {navigation} = this.props;
         return (
@@ -36,7 +57,7 @@ export default class FetchDemoPage extends React.Component{
                         }}
                     />
                 </View>
-                <Button title={'Fetch Key'} onPress={() => this.LoadData()} />
+                <Button title={'Fetch Key'} onPress={() => this.LoadData2()} />
                 <Text>{this.state.showText}</Text>
             </View>
         );
