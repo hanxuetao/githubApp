@@ -1,46 +1,31 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Text, Button, TextInput} from 'react-native';
+import {StyleSheet, View, Text, Button, TextInput, AsyncStorage} from 'react-native';
 import actions from '../action';
 import {connect} from 'react-redux';
+import DataStore from '../common/DataStore';
 
 type Props = {};
-export default class FetchDemoPage extends React.Component{
+const Key = 'saveToken';
+export default class DataStoreDemoPage extends React.Component{
     constructor(props){
         super(props)
         this.state = {
             showText:'',
         }
+        this.dataStore = new DataStore();
     }
 
-    LoadData() {
+    loadData(){
         let url = `https://api.github.com/search/repositories?q=${this.searchKey}`;
-        fetch(url)
-            .then(response => response.text())
-            .then(responseText => {
+        this.dataStore.fetchData(url)
+            .then(data => {
+                let showData = `init load time:${new Date(data.timestamp)}\n${JSON.stringify(data.data)}`;
                 this.setState({
-                    showText: responseText,
+                    showText:showData,
                 })
             })
-    }
-
-    LoadData2() {
-        let url = `https://api.github.com/search/repositories?q=${this.searchKey}`;
-        fetch(url)
-            .then(response => {
-                if(response.ok){
-                    return response.text();
-                }
-                throw new Error('Response Error');
-            })
-            .then(responseText => {
-                this.setState({
-                    showText: responseText,
-                })
-            })
-            .catch(e => {
-                this.setState({
-                    showText: e.toString(),
-                })
+            .catch(error => {
+                console.log(error.toString());
             })
     }
 
@@ -48,16 +33,20 @@ export default class FetchDemoPage extends React.Component{
         const {navigation} = this.props;
         return (
             <View style={styles.container}>
-                <Text>FetchDemoPage</Text>
+                <Text>DataStorePage</Text>
                 <View style={styles.input_container}>
                     <TextInput
                         style={styles.input}
                         onChangeText={text => {
-                            this.searchKey=text;
+                            this.searchKey = text;
                         }}
                     />
                 </View>
-                <Button title={'Fetch Key'} onPress={() => this.LoadData()} />
+                <View style={styles.input_container}>
+                    <Text onPress={() =>{
+                        this.loadData()
+                    }}>Fetch</Text>
+                </View>
                 <Text>{this.state.showText}</Text>
             </View>
         );
@@ -79,6 +68,7 @@ const styles = StyleSheet.create({
     input_container:{
         flexDirection:'row',
         alignItems: 'center',
+        justifyContent:'space-around',
     },
 });
 

@@ -4,6 +4,8 @@ import WelcomePage from '../pages/WelcomePage';
 import HomePage from '../pages/HomePage';
 import DetailPage from '../pages/DetailPage';
 import FetchDemoPage from '../pages/FetchDemoPage';
+import AsyncStorageDemoPage from '../pages/AsyncStorageDemoPage';
+import DataStoreDemoPage from '../pages/DataStoreDemoPage';
 
 
 const InitNavigator = createStackNavigator(
@@ -33,6 +35,18 @@ const MainNavigator = createStackNavigator(
         },
         FetchDemoPage:{
             screen:FetchDemoPage,
+            navigationOption:{
+                header: null,
+            },
+        },
+        // AsyncStorageDemoPage:{
+        //     screen:AsyncStorageDemoPage,
+        //     navigationOption:{
+        //         header: null,
+        //     },
+        // },
+        DataStoreDemoPage:{
+            screen:DataStoreDemoPage,
             navigationOption:{
                 header: null,
             },
