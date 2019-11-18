@@ -77,7 +77,6 @@ class DynamicTabNavigator extends React.Component{
         }
         const {PopularPage, TrendingPage, FavoritePage, ProfilePage} =TABS;
         const tabs = {PopularPage, TrendingPage, FavoritePage, ProfilePage};
-        PopularPage.navigationOptions.tabBarLabel = 'Popular1';
         return this.Tabs = createAppContainer(createBottomTabNavigator(
             tabs, {
                 tabBarComponent: props =>{
