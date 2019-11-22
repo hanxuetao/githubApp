@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import {FlatList, StyleSheet, View, Text, Button, RefreshControl} from 'react-native';
+import {FlatList, StyleSheet, View, Text, Button, RefreshControl, ActivityIndicator} from 'react-native';
 import {createMaterialTopTabNavigator}  from 'react-navigation-tabs';
 import {createAppContainer} from 'react-navigation';
-import PopularItem from '../component/PopularItem'
+import PopularItem from '../component/PopularItem';
+import Toast from 'react-native-easy-toast';
 import NavigationUtil from '../navigators/NavigationUtil';
 import {connect} from 'react-redux';
 import action from '../action/index';
@@ -11,6 +12,7 @@ const URL = 'https://api.github.com/search/repositories?q=';
 const QUERY_STR = '&sort=stars';
 const THEME_COLOR = 'red';
 
+type Props = {};
 export default class PopularPage extends React.Component{
     constructor(props) {
         super(props)
@@ -54,7 +56,8 @@ export default class PopularPage extends React.Component{
     };
 };
 
-class PopularTab extends Component{
+const pageSize = 10;
+class PopularTab extends Component<Props>{
     constructor(props){
         super(props);
         const {tabLabel} = this.props;
@@ -63,11 +66,33 @@ class PopularTab extends Component{
     componentDidMount() {
         this.loadData();
     }
-    loadData (){
-        const {onLoadPopularData} = this.props;
+    loadData (loadMore){
+        const {onRefreshPopular, onLoadMorePopular} = this.props;
+        let store = this._store();
         const url = this.genFetchUrl(this.storeName);
-        onLoadPopularData(this.storeName, url)
+        console.log(store)
+        if(loadMore){
+            onLoadMorePopular(this.storeName, ++store.pageIndex, pageSize, store.items, callback =>{
+                this.refs.toast.show('No More');
+            })
+        } else {
+            onRefreshPopular(this.storeName, url, pageSize)
+        }
     }
+    _store() {
+        const {popular} = this.props;
+        let store = popular[this.storeName];
+        if (!store) {
+            store = {
+                items: [],
+                isLoading: false,
+                projectModels: [],
+                hideLoadingMore: true,
+            }
+        }
+        return store;
+    }
+
     genFetchUrl(key){
         return URL + key + QUERY_STR;
     }
@@ -77,21 +102,22 @@ class PopularTab extends Component{
             item={item}
         />
     }
+    genIndicator(){
+        return this._store().hideLoadingMore?null:
+            <View style={styles.indicatorContainer}>
+                <ActivityIndicator
+                    style={styles.indicator}
+                />
+                <Text>Loading...</Text>
+            </View>
+    }
 
     render(){
-        const {popular} = this.props;
-        let store = popular[this.storeName];
-        // console.log(store)
-        if(!store) {
-            store = {
-                items: [],
-                isLoading: false,
-            }
-        }
+        let store = this._store();
         return (
             <View style={styles.container}>
                <FlatList
-                   data = {store.items.items}
+                   data = {store.projectModes}
                    renderItem={data => this.renderItem(data)}
                    keyExtractor={item => ""+item.id}
                    refreshControl={
@@ -104,6 +130,15 @@ class PopularTab extends Component{
                             tintColor = {THEME_COLOR}
                         />
                    }
+                   ListFooterComponent={() => this.genIndicator()}
+                   onEndReached={() => {
+                       this.loadData(true);
+                   }}
+                   onEndReachedThreshold={0.5}
+               />
+               <Toast
+                   ref={'toast'}
+                   position={'center'}
                />
             </View>
         )
@@ -115,7 +150,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    onLoadPopularData: (storeName, url) => dispatch(action.onLoadPopularData(storeName, url)),
+    onRefreshPopular: (storeName, url, pageSize) => dispatch(action.onRefreshPopular(storeName, url, pageSize)),
+    onLoadMorePopular: (storeName, pageIndex, pageSize, items, callback) => dispatch(action.onLoadMorePopular(storeName, pageIndex, pageSize, items, callback)),
 });
 
 const PopularTabPage = connect(mapStateToProps, mapDispatchToProps)(PopularTab)
@@ -123,7 +159,6 @@ const PopularTabPage = connect(mapStateToProps, mapDispatchToProps)(PopularTab)
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        backgroundColor:'#F5FCFF',
     },
     tabStyle: {
         minWidth:50,
@@ -134,8 +169,14 @@ const styles = StyleSheet.create({
     },
     labelStyle: {
         fontSize: 13,
-        marginTop: 6,
-        marginBottom: 6,
-    }
+        margin: 0,
+    },
+    indicatorContainer:{
+        alignItems:'center',
+    },
+    indicator:{
+        color:'blue',
+        margin: 10,
+    },
 });
 

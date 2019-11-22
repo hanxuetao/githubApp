@@ -27,13 +27,11 @@ export default class DataStore {
             fetch(url)
                 .then((response) =>{
                     if(response.ok){
-                        console.log(response)
                         return response.json();
                     }
                     throw new Error('Network not ok')
                 })
                 .then((responseData) => {
-                    console.log(responseData)
                     this.saveData(url, responseData)
                     resolve(responseData)
                 })
