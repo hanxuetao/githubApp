@@ -70,7 +70,6 @@ class PopularTab extends Component<Props>{
         const {onRefreshPopular, onLoadMorePopular} = this.props;
         let store = this._store();
         const url = this.genFetchUrl(this.storeName);
-        console.log(store)
         if(loadMore){
             onLoadMorePopular(this.storeName, ++store.pageIndex, pageSize, store.items, callback =>{
                 this.refs.toast.show('No More');
@@ -132,9 +131,18 @@ class PopularTab extends Component<Props>{
                    }
                    ListFooterComponent={() => this.genIndicator()}
                    onEndReached={() => {
-                       this.loadData(true);
+                       setTimeout(() => {
+                           if (this.canLoadMore) {
+                               this.loadData(true);
+                               this.canLoadMore = false;
+                           }
+                       },100)
                    }}
                    onEndReachedThreshold={0.5}
+                   onMomentumScrollBegin={() =>{
+                       this.canLoadMore = true;
+                       console.log('onMomentumScrollBegin')
+                   }}
                />
                <Toast
                    ref={'toast'}

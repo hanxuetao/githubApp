@@ -32,7 +32,6 @@ export function onLoadMorePopular(storeName, pageIndex, pageSize, dataArray = []
                 })
             } else {
                 let max = pageSize * pageIndex > dataArray.length ? dataArray.length : pageSize * pageIndex;
-                console.log(dataArray.slice(0, max))
                     dispatch({
                         type: Types.POPULAR_LOAD_MORE_SUCCESS,
                         storeName,
